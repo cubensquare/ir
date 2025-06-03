@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kafka Ticket Booking</title>
+</head>
+<body style="font-family: sans-serif;">
+    <h1>Book Your Train Ticket</h1>
+    <form action="/book" method="POST">
+        <label>Name:</label><br>
+        <input type="text" name="username" required><br><br>
+
+        <label>From:</label><br>
+        <input type="text" name="from_station" required><br><br>
+
+        <label>To:</label><br>
+        <input type="text" name="to_station" required><br><br>
+
+        <label>Date:</label><br>
+        <input type="date" name="travel_date" required><br><br>
+
+        <input type="submit" value="Book Ticket">
+    </form>
+
+    <hr>
+
+    <h2>Kafka Flow Dashboard</h2>
+    <ul>
+        <li><strong>Producer Count:</strong> {{ stats['produced'] }}</li>
+        <li><strong>Messages in Topic:</strong> {{ stats['topic'] }}</li>
+        <li><strong>Partition Writes:</strong> {{ stats['partition'] }}</li>
+        <li><strong>Consumed Messages:</strong> {{ stats['consumed'] }}</li>
+    </ul>
+
+    <hr>
+
+    <h2>📢 Consumer Bulletin Board</h2>
+    {% if last %}
+        <ul>
+           <li><strong>Passenger:</strong> {{ last.user }}</li>
+            <li><strong>From:</strong> {{ last.from_station }}</li>
+            <li><strong>To:</strong> {{ last.to_station }}</li>
+            <li><strong>Date:</strong> {{ last.date }}</li>
+        </ul>
+    {% else %}
+        <p>No ticket consumed yet.</p>
+    {% endif %}
+</body>
+</html>
