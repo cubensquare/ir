@@ -1,7 +1,7 @@
 from kafka import KafkaConsumer
 import json
 import os
-import request
+import requests
 
 tracker_file = 'tracker_partition.json'
 log_file = 'booking_log.json'
