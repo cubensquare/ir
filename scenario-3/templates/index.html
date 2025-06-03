@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kafka Ticket Booking</title>
+    <style>
+        table { border-collapse: collapse; width: 45%; margin: 10px; float: left;}
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #4CAF50; color: white; }
+        .partition1 th { background-color: #f1c40f; color: black; }
+    </style>
+</head>
+<body style="font-family: sans-serif;">
+    <h1>Book Your Train Ticket</h1>
+    <form action="/book" method="POST">
+        <label>Name:</label><br>
+        <input type="text" name="username" required><br><br>
+        <label>From:</label><br>
+        <input type="text" name="from_station" required><br><br>
+        <label>To:</label><br>
+        <input type="text" name="to_station" required><br><br>
+        <label>Date:</label><br>
+        <input type="date" name="travel_date" required><br><br>
+        <input type="submit" value="Book Ticket">
+    </form>
+    <hr>
+    <h2>Kafka Flow Dashboard</h2>
+    <ul>
+        <li><strong>Producer Count:</strong> {{ stats['produced'] }}</li>
+        <li><strong>Messages in Topic:</strong> {{ stats['topic'] }}</li>
+        <li><strong>Partition Writes:</strong> {{ stats['partition'] }}</li>
+        <li><strong>Consumed Messages:</strong> {{ stats['consumed'] }}</li>
+        <li><strong>Last Partition:</strong> {{ stats['last_partition'] }}</li>
+    </ul>
+    <hr style="clear: both;">
+    <h2>Consumer Bulletin Board</h2>
+    <div>
+        <table>
+            <tr><th colspan="4">Partition 0 (A–M)</th></tr>
+            <tr><th colspan="4">Partition 0 (A–M)</th></tr>
+            <tr><th>Name</th><th>From</th><th>To</th><th>Date</th></tr>
+            {% for ticket in logs["0"] %}
+            <tr>
+                <td>{{ ticket['user'] }}</td>
+                <td>{{ ticket['from_station'] }}</td>
+                <td>{{ ticket['to_station'] }}</td>
+                <td>{{ ticket['date'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <table class="partition1">
+            <tr><th colspan="4">Partition 1 (N–Z)</th></tr>
+            <tr><th>Name</th><th>From</th><th>To</th><th>Date</th></tr>
+            {% for ticket in logs["1"] %}
+            <tr>
+                <td>{{ ticket['user'] }}</td>
+                <td>{{ ticket['from_station'] }}</td>
+                <td>{{ ticket['to_station'] }}</td>
+                <td>{{ ticket['date'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
