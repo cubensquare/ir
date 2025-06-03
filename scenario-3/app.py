@@ -79,5 +79,8 @@ def book_ticket():
     update_tracker("partition", partition=partition)
     return redirect('/')
 
+@app.route('/update_tracker')
+def liveUpdate():
+    update_tracker(request.arg.get("tracker"))
 if __name__ == '__main__':
     app.run(debug=True, port=5002)
