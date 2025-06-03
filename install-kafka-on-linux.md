@@ -92,6 +92,13 @@ bin/kafka-console-producer.sh --topic test-topic --bootstrap-server localhost:90
 bin/kafka-console-consumer.sh --topic test-topic --bootstrap-server localhost:9092 --from-beginning
 ```
 
+# to check the offset
+```bash
+bin/kafka-run-class.sh kafka.tools.GetOffsetShell \
+--broker-list localhost:9092 \
+--topic your-topic-name \
+--time -1
+```
 
 ### 💬 In Application (Java, Python, etc.)
 
