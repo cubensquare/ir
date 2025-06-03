@@ -17,7 +17,7 @@ java -version
 
 ## 3. Download and Extract Kafka
 ```bash
-curl -O https://downloads.apache.org/kafka/3.6.1/kafka_2.13-3.6.1.tgz
+wget https://archive.apache.org/dist/kafka/3.6.1/kafka_2.13-3.6.1.tgz
 tar -xzf kafka_2.13-3.6.1.tgz
 cd kafka_2.13-3.6.1
 ```
