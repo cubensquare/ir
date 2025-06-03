@@ -96,7 +96,7 @@ bin/kafka-console-consumer.sh --topic test-topic --bootstrap-server localhost:90
 ### 💬 In Application (Java, Python, etc.)
 
 Kafka is referred in code as:
-	•	bootstrap_servers='localhost:9092'
-	•	Producer sends data to a topic
-	•	Consumer subscribes to a topic
+	bootstrap_servers='localhost:9092'
+	Producer sends data to a topic
+	Consumer subscribes to a topic
 
