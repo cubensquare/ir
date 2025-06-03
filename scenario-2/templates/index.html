@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kafka Partitioned Ticket Booking</title>
+</head>
+<body style="font-family: sans-serif;">
+    <h1>Book Your Train Ticket (Partitioned Kafka)</h1>
+    <form action="/book" method="POST">
+        <label>Name:</label><br>
+        <input type="text" name="username" required><br><br>
+
+        <label>From:</label><br>
+        <input type="text" name="from_station" required><br><br>
+
+        <label>To:</label><br>
+        <input type="text" name="to_station" required><br><br>
+
+        <label>Date:</label><br>
+        <input type="date" name="travel_date" required><br><br>
+
+        <input type="submit" value="Book Ticket">
+    </form>
+
+    <hr>
+
+    <h2>Kafka Partition Flow Dashboard</h2>
+    <ul>
+        <li><strong>Producer Count:</strong> {{ stats['produced'] }}</li>
+        <li><strong>Messages in Topic:</strong> {{ stats['topic'] }}</li>
+        <li><strong>Partition 0 Writes (A–M):</strong> {{ stats['partition_0'] }}</li>
+        <li><strong>Partition 1 Writes (N–Z):</strong> {{ stats['partition_1'] }}</li>
+        <li><strong>Consumed Messages:</strong> {{ stats['consumed'] }}</li>
+    </ul>
+
+    <hr>
+
+    <h2>📢 Last Ticket Consumed (Consumer Bulletin Board)</h2>
+    {% if stats['last_message'] %}
+          <ul>
+            <li><strong>Passenger:</strong> {{ stats['last_message']['user'] }}</li>
+            <li><strong>From:</strong> {{ stats['last_message']['from_station'] }}</li>
+            <li><strong>To:</strong> {{ stats['last_message']['to_station'] }}</li>
+            <li><strong>Date:</strong> {{ stats['last_message']['date'] }}</li>
+            <li><strong>Partition:</strong> {{ stats['last_partition'] }}</li>
+        </ul>
+    {% else %}
+        <p>No tickets consumed yet.</p>
+    {% endif %}
+</body>
+</html>
