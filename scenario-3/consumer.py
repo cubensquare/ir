@@ -1,6 +1,7 @@
 from kafka import KafkaConsumer
 import json
 import os
+import request
 
 tracker_file = 'tracker_partition.json'
 log_file = 'booking_log.json'
@@ -48,5 +49,5 @@ print("📬 Listening to ticket_partitioned topic...")
 for message in consumer:
     booking = message.value
     print(f"📨 Received from Partition {message.partition}: {booking}")
-    update_tracker()
+    requests.get('http://locahost:5002/update_tracker?tracker=consumed')
     log_booking(message.partition, booking)
