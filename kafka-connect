@@ -74,7 +74,7 @@ curl http://localhost:8083/connector-plugins | jq
 
 
 
-Register Debezium MySQL Source Connector
+##Register Debezium MySQL Source Connector [ Update with your db name , username , pwd etc ]
 vi register-mysql-source.json:
 
 {
@@ -88,6 +88,7 @@ vi register-mysql-source.json:
     "database.server.id": "184054",
     "database.server.name": "mysql01",
     "database.include.list": "source_db",
+    "topic.prefix": "test",
     "table.include.list": "source_db.users",
     "database.history.kafka.bootstrap.servers": "localhost:9092",
     "database.history.kafka.topic": "dbhistory.fullfillment"
