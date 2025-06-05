@@ -1,3 +1,5 @@
+https://docs.redhat.com/fr/documentation/red_hat_enterprise_linux/9/html/configuring_and_using_database_servers/installing-mysql_assembly_using-mysql
+
 
 -- Login to MySQL
 mysql -u root -p
