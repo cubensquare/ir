@@ -92,10 +92,8 @@ vi register-mysql-source.json:
     "database.server.id": "184054",
     "database.server.name": "mysql01", 
 
-    "database.include.list": "sourcedb",
-    "table.include.list": "sourcedb.drivers",
-
-    
+    "database.include.list": "source_db",
+    "table.include.list": "users",
     "topic.prefix": "topic",
 
     
