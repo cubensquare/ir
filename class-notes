@@ -1,0 +1,717 @@
+bKafka - Distributed commit Log system 
+Message : Example : Delhi Train 1245 arrived at platform 1
+Topic : Train_status_updates
+Partition : north_train , south_train, east_train / parition 0, parition 1
+Producer  : Reservation system writes / platform booking 
+Consumer  : Reads those messages from Producer / display board
+Kafka broker = kafka server
+Several kafka brokers are referred cluster
+Kafka servers are routed to zookeeper ( centralized management / controller )
+Operator  ( oc get pods --> could kafka-cluster pod )/ Redhat openshift - we installed the kafka using strimzi operator : cluster operator , topicoperator, useroperator , entity operator )
+. Client and tools - Client libraries - Java , python , Go etc
+  Built-in command line tools ( kafka-consumer-producer.sh)
+  Kafka stream - real time processing
+  Replication - Primary / secondary - for failover
+  -----------------------------
+  Topic
+  Message
+  Producer
+  Consumer
+  Partition
+ Broker
+ Cluster
+ Zookeeper
+ Replication
+ Streams
+ ------------------------------------
+ 
+ Kafka Installation
+ Kafka Components  ( zookeeper properties , server properties )
+ 
+ To start the Kafka setup :
+ 1. Run zookeeper
+ 2. Run kafka server ( Broker ) 
+ 3. Create a topic ( kafka-topics.sh )
+ 4. Run the python app - producer ( app.py)
+ 5. Run the python app - consumer ( consumer.py )
+ 6. Open the browser and place the booking to validate 
+ 
+--> cd kafka_2.13-3.6.1
+-->  git clone https://github.com/cubensquare/ir
+-->  cd scenario-1
+--> pip install flask kafka-python
+ 
+  
+ Start zookeeper
+ --> bin/zookeeper-server-start.sh config/zookeeper.properties
+ 
+ Start Broker
+ --> bin/kafka-server-start.sh config/server.properties
+ 
+ Create a topic
+ --> bin/kafka-topics.sh --create --topic ticket_bookings --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+ 
+ 
+ Run the producer python app
+ --> cd ir/scenario-1
+ --> python app.py
+ 
+ Run the consumer python app ( open a new terminal ) 
+ --> cd ir/scenario-1
+ --> python consumer.py
+ 
+ ## Open the browser and access http://localhost:5000
+ 
+
+##################################
+
+Scenario-2
+
+Create a topic with 2 partitions
+All usernames starting with A-M , will get routed to parition 0
+All usernames starting with N-Z, will get route to parition 1
+
+To delete a topic :
+
+--> bin/kafka-topics.sh --bootstarp-server localhost:9092 --delete --topic ticket_partitioned
+
+
+Topic creation for scenario - 2 
+
+--> bin/kafka-topics.sh --create --topic ticket_partitioned --bootstrap-server localhost:9092 --partitions 2 --replication-factor 1
+
+To list the topic :
+--> bin/kafka-topics.sh --bootstratp-server localhost:9092 --list
+
+Finally access your application using
+--> http://localhost:5001
+
+##############################
+
+
+Insync 
+CDC
+Scalability
+stateful applications - how they are being handled
+mysql db - replica from 1 db to other
+ 
+
+Sync connector issues - Kafka : datase ( superapp ) / downtime - write
+
+
+################################
+
+first_letter = user[0].upper
+if 'A' <= first_letter <= 'M':
+   key = 'group1'
+   parition = 0
+else
+  key = 'group2'
+  parition = 1
+  =========================
+
+Scenario - 3 --> both app.py and consumer.py are updated 
+
+cd scenario-3
+git pull origin main
+
+--> pip install requests
+--------------------------
+
+Processing data s
+
+============================
+
+Comparission : Vm - Openshift
+
+Kafka Server or Broker - 3 nodes
+Zookeeper - 1 instance
+Properties - Server Properties , Zookeeper properties for config [timeout, connection count, replication factor,
+             log retention]
+Topics 
+Partitions
+Producers
+Consumers
+
+Increased Load : add more partitions , scale kafka brokers
+Rebalancing : 
+Monitoring - Prometheus, Grafana
+
+Kafka streams
+
+Openshift Container Platform :
+- Strimzi Operator [ Kafka , Zookeeper ]
+- PODs 
+- Topic , Partition
+- Scalability [ HPA , Vertical scaling - cpu,memory ]
+- Resources like cpu , memory , storage planning based on
+  Expected throughput ( eg - 1000 tickets/sec
+  Message size
+  Partition Count
+  Retention Duration
+  Replication factor
+  
+  
+  Example on resourcing :
+  Producer rate : 1000 tickets/sec during tadkal
+  Avg Message size  5KB
+  Topic retention : 7 days
+  Replication : 3
+  Required partitions : 12-24 parallel processing
+  Broker cpu,ram : 4 cpu, 8 - 16GB Ram per pod
+  disk : High iops ssd / 500GB 
+  
+  Example :
+  - Booking message : ~2 KB
+  - Recv 1000 transactions/sec 
+  - Per min --> 2 MB x 60 = 120 MB/min
+  - Per hour -- 7.2 GB/Hour
+  - Per day --> 170 GB/day
+  
+  3 paritions , each will get 52GB/day
+  
+  ====================================
+  Openshift Object/Kind : 
+  kafka
+  kafkaTopics
+  kafkaUser
+  Kafkaconnect
+  kafkaConnector
+  KafkaMirrorMaker
+  KafkaMirrorMaker2
+  KafkaBride
+  KafkaRebalance
+  KafkaTopicImport
+  
+  
+  
+  Sample yaml - to create kafka cluster
+  kind: Kafka
+  metadata:
+     name: my-cluster
+  spec:
+    kafka:
+       version: 3.6.1
+       replicas: 3
+       listeners:
+       - name: plain
+         port: 9092
+         type: internal
+         tls: false
+       storage:
+         type: persistent-claim
+         size: 100Gi
+         class: fast
+    zookeeper:
+        replicas: 3
+        storage: 
+           type: persistent-claim
+           size: 50Gi
+    
+    ## To run a yaml
+    --> oc create -f kafka.yaml
+    
+    --> kubectl api-resources
+    --> oc api-resources
+    --> oc explain kafka
+    --> oc explain kafka.spec
+    --> oc explain kafka.spec.kafka.listeners
+    
+    --> oc get kafka -o yaml 
+    --> oc get kafka -o yaml > mycluster.yaml
+    
+    --> kubectl get pods
+    --> oc get pods
+    
+    --> kubectl describe pod <pod-name>
+    --> oc describe pod <pod-name>
+    
+    --> kubectl scale
+    --> oc scale
+    
+    --> kubectl autoscale
+    --> oc autoscale
+====================
+
+ArgoCD - Deployment tool 
+
+Github - Yaml - ArgoCD to deploy on Openshift
+
+CI : Code - Build - Test - Push to registry  [ Teamcity , Jenkins, Spinnaker ]
+CD : Deploy [ ArgoCD , Rundeck ] 
+
+
+
+=========================
+
+Application --> Code --> Build -> Jar/war --> Dockerfile --> Contianer image --> Deploy on Openshift
+
+In Openshift deployment yaml , mention the environment variables like
+  broker_server
+  Port:
+  topic name
+  partition
+  
+  
+  Deployment strategy :
+  - Rolling update
+  - BlueGreen Deployment
+  - Canary deployment
+ 
+ 
+ 
+ 
+The this topology counts how many times any user clicked a particular link. 
+
+"/technologies"
+"/our-code-is-open"
+"/technologies/linux/platform"
+"/technologies/cloud-computing/openshift"
+"/technologies"
+"/our-code-is-open
+
+1- User-id : Initial
+2- URL : 
+
+Repartitioning  - 
+
+
+Serialization - Deserialization : json file size high / load on infra [ reduce the size - possible ways]
+schema registry - 
+Apache avro
+Kafka connect : mysql : cdc connector  / change schema, change column, code level changes / downtime 
+Monitoring / troubleshooting
+Kafka metrics - grafana / prometheus
+Kstreams KtablebKafka - Distributed commit Log system 
+Message : Example : Delhi Train 1245 arrived at platform 1
+Topic : Train_status_updates
+Partition : north_train , south_train, east_train / parition 0, parition 1
+Producer  : Reservation system writes / platform booking 
+Consumer  : Reads those messages from Producer / display board
+Kafka broker = kafka server
+Several kafka brokers are referred cluster
+Kafka servers are routed to zookeeper ( centralized management / controller )
+Operator  ( oc get pods --> could kafka-cluster pod )/ Redhat openshift - we installed the kafka using strimzi operator : cluster operator , topicoperator, useroperator , entity operator )
+. Client and tools - Client libraries - Java , python , Go etc
+  Built-in command line tools ( kafka-consumer-producer.sh)
+  Kafka stream - real time processing
+  Replication - Primary / secondary - for failover
+  -----------------------------
+  Topic
+  Message
+  Producer
+  Consumer
+  Partition
+ Broker
+ Cluster
+ Zookeeper
+ Replication
+ Streams
+ ------------------------------------
+ 
+ Kafka Installation
+ Kafka Components  ( zookeeper properties , server properties )
+ 
+ To start the Kafka setup :
+ 1. Run zookeeper
+ 2. Run kafka server ( Broker ) 
+ 3. Create a topic ( kafka-topics.sh )
+ 4. Run the python app - producer ( app.py)
+ 5. Run the python app - consumer ( consumer.py )
+ 6. Open the browser and place the booking to validate 
+ 
+--> cd kafka_2.13-3.6.1
+-->  git clone https://github.com/cubensquare/ir
+-->  cd scenario-1
+--> pip install flask kafka-python
+ 
+  
+ Start zookeeper
+ --> bin/zookeeper-server-start.sh config/zookeeper.properties
+ 
+ Start Broker
+ --> bin/kafka-server-start.sh config/server.properties
+ 
+ Create a topic
+ --> bin/kafka-topics.sh --create --topic ticket_bookings --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+ 
+ 
+ Run the producer python app
+ --> cd ir/scenario-1
+ --> python app.py
+ 
+ Run the consumer python app ( open a new terminal ) 
+ --> cd ir/scenario-1
+ --> python consumer.py
+ 
+ ## Open the browser and access http://localhost:5000
+ 
+
+##################################
+
+Scenario-2
+
+Create a topic with 2 partitions
+All usernames starting with A-M , will get routed to parition 0
+All usernames starting with N-Z, will get route to parition 1
+
+To delete a topic :
+
+--> bin/kafka-topics.sh --bootstarp-server localhost:9092 --delete --topic ticket_partitioned
+
+
+Topic creation for scenario - 2 
+
+--> bin/kafka-topics.sh --create --topic ticket_partitioned --bootstrap-server localhost:9092 --partitions 2 --replication-factor 1
+
+To list the topic :
+--> bin/kafka-topics.sh --bootstratp-server localhost:9092 --list
+
+Finally access your application using
+--> http://localhost:5001
+
+##############################
+
+
+Insync 
+CDC
+Scalability
+stateful applications - how they are being handled
+mysql db - replica from 1 db to other
+ 
+
+Sync connector issues - Kafka : datase ( superapp ) / downtime - write
+
+
+################################
+
+first_letter = user[0].upper
+if 'A' <= first_letter <= 'M':
+   key = 'group1'
+   parition = 0
+else
+  key = 'group2'
+  parition = 1
+  =========================
+
+Scenario - 3 --> both app.py and consumer.py are updated 
+
+cd scenario-3
+git pull origin main
+
+--> pip install requests
+--------------------------
+
+Processing data s
+
+============================
+
+Comparission : Vm - Openshift
+
+Kafka Server or Broker - 3 nodes
+Zookeeper - 1 instance
+Properties - Server Properties , Zookeeper properties for config [timeout, connection count, replication factor,
+             log retention]
+Topics 
+Partitions
+Producers
+Consumers
+
+Increased Load : add more partitions , scale kafka brokers
+Rebalancing : 
+Monitoring - Prometheus, Grafana
+
+Kafka streams
+
+Openshift Container Platform :
+- Strimzi Operator [ Kafka , Zookeeper ]
+- PODs 
+- Topic , Partition
+- Scalability [ HPA , Vertical scaling - cpu,memory ]
+- Resources like cpu , memory , storage planning based on
+  Expected throughput ( eg - 1000 tickets/sec
+  Message size
+  Partition Count
+  Retention Duration
+  Replication factor
+  
+  
+  Example on resourcing :
+  Producer rate : 1000 tickets/sec during tadkal
+  Avg Message size  5KB
+  Topic retention : 7 days
+  Replication : 3
+  Required partitions : 12-24 parallel processing
+  Broker cpu,ram : 4 cpu, 8 - 16GB Ram per pod
+  disk : High iops ssd / 500GB 
+  
+  Example :
+  - Booking message : ~2 KB
+  - Recv 1000 transactions/sec 
+  - Per min --> 2 MB x 60 = 120 MB/min
+  - Per hour -- 7.2 GB/Hour
+  - Per day --> 170 GB/day
+  
+  3 paritions , each will get 52GB/day
+  
+  ====================================
+  Openshift Object/Kind : 
+  kafka
+  kafkaTopics
+  kafkaUser
+  Kafkaconnect
+  kafkaConnector
+  KafkaMirrorMaker
+  KafkaMirrorMaker2
+  KafkaBride
+  KafkaRebalance
+  KafkaTopicImport
+  
+  
+  
+  Sample yaml - to create kafka cluster
+  kind: Kafka
+  metadata:
+     name: my-cluster
+  spec:
+    kafka:
+       version: 3.6.1
+       replicas: 3
+       listeners:
+       - name: plain
+         port: 9092
+         type: internal
+         tls: false
+       storage:
+         type: persistent-claim
+         size: 100Gi
+         class: fast
+    zookeeper:
+        replicas: 3
+        storage: 
+           type: persistent-claim
+           size: 50Gi
+    
+    ## To run a yaml
+    --> oc create -f kafka.yaml
+    
+    --> kubectl api-resources
+    --> oc api-resources
+    --> oc explain kafka
+    --> oc explain kafka.spec
+    --> oc explain kafka.spec.kafka.listeners
+    
+    --> oc get kafka -o yaml 
+    --> oc get kafka -o yaml > mycluster.yaml
+    
+    --> kubectl get pods
+    --> oc get pods
+    
+    --> kubectl describe pod <pod-name>
+    --> oc describe pod <pod-name>
+    
+    --> kubectl scale
+    --> oc scale
+    
+    --> kubectl autoscale
+    --> oc autoscale
+====================
+
+ArgoCD - Deployment tool 
+
+Github - Yaml - ArgoCD to deploy on Openshift
+
+CI : Code - Build - Test - Push to registry  [ Teamcity , Jenkins, Spinnaker ]
+CD : Deploy [ ArgoCD , Rundeck ] 
+
+
+
+=========================
+
+Application --> Code --> Build -> Jar/war --> Dockerfile --> Contianer image --> Deploy on Openshift
+
+In Openshift deployment yaml , mention the environment variables like
+  broker_server
+  Port:
+  topic name
+  partition
+  
+  
+  Deployment strategy :
+  - Rolling update
+  - BlueGreen Deployment
+  - Canary deployment
+ 
+ 
+ 
+ 
+The this topology counts how many times any user clicked a particular link. 
+
+"/technologies"
+"/our-code-is-open"
+"/technologies/linux/platform"
+"/technologies/cloud-computing/openshift"
+"/technologies"
+"/our-code-is-open
+
+1- User-id : Initial
+2- URL : 
+
+Repartitioning  - 
+
+
+Serialization - Deserialization : json file size high / load on infra [ reduce the size - possible ways]
+schema registry - 
+Apache avro
+Kafka connect : mysql : cdc connector  / change schema, change column, code level changes / downtime 
+Monitoring / troubleshooting
+Kafka metrics - grafana / prometheus
+Kstreams Ktable
+
+
+
+=====================
+
+
+Common source connectors ( External system --> Kafka )
+1. Mysql : debezium-connector-mysql
+2. Postgresql : debezium-connector-postgres
+3. MongoDB : debezium-connector-mongodb
+4. Filesystem : FileStreamSourceConnector
+5. JDFC : JDBC Source Connector
+
+Common Sink connectors ( Kafka - External System )
+1. Mysql/postgresql : JDBCSink Connector
+2. ElasticSearch : Elasticsearch Sink Connector
+3. MongoDB : MongoDB Sink connector
+
+=======================
+
+Kafka Connect steps :
+1. Install mysql and create 2 db
+2. Install kafka Connect and configure the plugin path
+3. Install Debezium Mysql Source Connector 
+4. Create a json file for source connector with all configuration
+5. Restart kafka connect
+6. Register the mysql source connector and verity
+7. Install jdbc sink connector  and create the json file
+8. Register the jdbc sink connector
+9. Validate the sinkdb and check if the details from sourcedb is available here
+
+To list the topic :
+
+bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+
+
+=====================
+
+
+Common source connectors ( External system --> Kafka )
+1. Mysql : debezium-connector-mysql
+2. Postgresql : debezium-connector-postgres
+3. MongoDB : debezium-connector-mongodb
+4. Filesystem : FileStreamSourceConnector
+5. JDFC : JDBC Source Connector
+
+Common Sink connectors ( Kafka - External System )
+1. Mysql/postgresql : JDBCSink Connector
+2. ElasticSearch : Elasticsearch Sink Connector
+3. MongoDB : MongoDB Sink connector
+
+=======================
+
+Kafka Connect steps :
+1. Install mysql and create 2 db
+2. Install kafka Connect and configure the plugin path
+3. Install Debezium Mysql Source Connector 
+4. Create a json file for source connector with all configuration
+5. Restart kafka connect
+6. Register the mysql source connector and verity
+7. Install jdbc sink connector  and create the json file
+8. Register the jdbc sink connector
+9. Validate the sinkdb and check if the details from sourcedb is available here
+
+To list the topic :
+
+bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
