@@ -82,28 +82,27 @@ vi register-mysql-source.json:
   "config": {
     "connector.class": "io.debezium.connector.mysql.MySqlConnector",
 
-    // MySQL connection
+  
     "database.hostname": "localhost",
     "database.port": "3306",
     "database.user": "root",
     "database.password": "password",
 
-    // Required IDs & names
+
     "database.server.id": "184054",
     "database.server.name": "mysql01", 
 
-    // Filter: which DBs & tables to include
     "database.include.list": "sourcedb",
     "table.include.list": "sourcedb.drivers",
 
-    // Kafka topic prefix (used as: <prefix>.<db>.<table>)
+    
     "topic.prefix": "topic",
 
-    // Debezium internal schema history settings
+    
     "schema.history.internal.kafka.bootstrap.servers": "localhost:9092",
     "schema.history.internal.kafka.topic": "schema-changes.mysql01", 
 
-    // Optional tuning
+    
     "include.schema.changes": "true", 
     "snapshot.mode": "initial", 
     "time.precision.mode": "connect"
