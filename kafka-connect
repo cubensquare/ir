@@ -119,9 +119,13 @@ http://localhost:8083/connectors
 
 ## Download and install jdbc-sink connector
 --> cd /usr/local/share/kafka/plugins/debezium-mysql/
---> curl https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.33/mysql-connector-java-8.0.33.jar
---> cp mysql-connector-j-8.0.33.jar /usr/local/share/kafka/plugins/debezium-mysql/jdbc-source-sink-connector/confluentinc-kafka-connect-jdbc-10.7.3/lib/
 
+## Download jdbc sink connector from below link .. Go to below link in browser, below self-hosted , click on download 
+
+--> https://www.confluent.io/hub/confluentinc/kafka-connect-jdbc  
+## From the download folder , copy the zip file and unzip 
+
+--> cp mysql-connector-j-8.0.33.jar /usr/local/share/kafka/plugins/debezium-mysql/jdbc-source-sink-connector/confluentinc-kafka-connect-jdbc-10.7.3/lib/
 --> curl -sL --http1.1 https://packages.confluent.io/tools/confluent-hub-client-latest.tar.gz | tar -xz
 --> sudo mv confluent-hub-client /usr/local/bin/confluent-hub
 
