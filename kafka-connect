@@ -75,7 +75,7 @@ curl http://localhost:8083/connector-plugins | jq
 
 
 Register Debezium MySQL Source Connector
-vi Create register-mysql-source.json:
+vi register-mysql-source.json:
 
 {
   "name": "mysql-source-connector",
