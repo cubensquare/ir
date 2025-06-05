@@ -61,6 +61,11 @@ Extract to Plugin Path:
 mkdir -p /usr/local/share/kafka/plugins/debezium-mysql
 tar -xvzf debezium-connector-mysql-2.5.2.Final-plugin.tar.gz -C /usr/local/share/kafka/plugins/debezium-mysql
 
+## Add the plugin path in the last line of properties 
+vi /usr/local/share/kafka/config/connect-distributed.properties
+
+plugin.path=/usr/local/share/kafka/plugins
+
 You must restart Kafka Connect to load the new plugin:
 bin/connect-distributed.sh config/connect-distributed.properties
 
