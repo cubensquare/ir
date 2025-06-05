@@ -119,7 +119,7 @@ http://localhost:8083/connectors
 
 ## Download and install jdbc-sink connector
 --> cd /usr/local/share/kafka/plugins/debezium-mysql/
---> wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.33/mysql-connector-java-8.0.33.jar
+--> curl https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.33/mysql-connector-java-8.0.33.jar
 --> cp mysql-connector-j-8.0.33.jar /usr/local/share/kafka/plugins/debezium-mysql/jdbc-source-sink-connector/confluentinc-kafka-connect-jdbc-10.7.3/lib/
 
 --> curl -sL --http1.1 https://packages.confluent.io/tools/confluent-hub-client-latest.tar.gz | tar -xz
