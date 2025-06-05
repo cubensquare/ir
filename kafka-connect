@@ -63,12 +63,94 @@ CREATE TABLE drivers (
   license_number VARCHAR(50)
 );
 
-LOAD DATA INFILE '/path/to/drivers.csv'
+LOAD DATA INFILE '/path/to/employers.csv'
 INTO TABLE drivers
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 ```
+
+ Install Kafka Connect Plugin (Debezium)
+
+cd /opt/kafka/libs  # Or Kafka home directory
+wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-mysql/2.5.1.Final/debezium-connector-mysql-2.5.1.Final-plugin.tar.gz
+tar -xvzf debezium-connector-mysql-2.5.1.Final-plugin.tar.gz -C /opt/kafka/connectors/
+
+Update the plugin path in connect-distributed.properties:
+plugin.path=/opt/kafka/connectors
+
+
+Login to MySQL (port 3306) and create schema/table:
+CREATE DATABASE sourcedb;
+USE sourcedb;
+
+CREATE TABLE employers (
+  id INT PRIMARY KEY,
+  name VARCHAR(100),
+  license_number VARCHAR(50)
+);
+
+Import csv :
+LOAD DATA LOCAL INFILE '/path/to/employers.csv'  #put your path 
+INTO TABLE drivers
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+Start Kafka + Kafka Connect 
+kafka/bin/zookeeper-server-start.sh -daemon kafka/config/zookeeper.properties
+
+kafka/bin/kafka-server-start.sh -daemon kafka/config/server.properties
+
+Run Kafka Connect
+
+kafka/bin/connect-distributed.sh kafka/config/connect-distributed.properties
+
+
+Register Debezium Source Connector (MySQL → Kafka) ## Check and udpate your details below 
+
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+  "name": "mysql-source-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname": "localhost",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "yourpassword",
+    "database.server.id": "10181",
+    "database.server.name": "sourcedb",
+    "database.include.list": "sourcedb",
+    "table.include.list": "sourcedb.employers",
+    "database.history.kafka.bootstrap.servers": "localhost:9092",
+    "database.history.kafka.topic": "history.sourcedb",
+    "include.schema.changes": "false"
+  }
+}'
+
+Register JDBC Sink Connector (Kafka → MySQL on Port 3307)
+cd /opt/kafka/connectors
+wget https://packages.confluent.io/maven/io/confluent/kafka-connect-jdbc/10.7.3/kafka-connect-jdbc-10.7.3.jar
+
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+  "name": "mysql-sink-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "connection.url": "jdbc:mysql://localhost:3307/sinkdb?user=root&password=yourpassword",
+    "topics": "sourcedb.sourcedb.employers",
+    "auto.create": "true",
+    "insert.mode": "insert"
+  }
+}'
+
+Verify the Output in Sink MySQL (Port 3307)
+mysql -u root -P 3307 -h 127.0.0.1
+
+USE sinkdb;
+SELECT * FROM drivers;
+
+
+
 
 
