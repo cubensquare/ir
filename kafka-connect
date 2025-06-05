@@ -47,6 +47,27 @@ FLUSH PRIVILEGES;
 Start Kafka connect
 connect-distributed.sh config/connect-distributed.properties
 
+Check your connect-distributed.properties or connect-standalone.properties:
+
+plugin.path=/usr/local/share/kafka/plugins
+
+If it’s not set, add or export it:
+export CONNECT_PLUGIN_PATH=/usr/local/share/kafka/plugins
+
+Download Debezium MySQL Connector :
+wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-mysql/2.5.2.Final/debezium-connector-mysql-2.5.2.Final-plugin.tar.gz
+
+Extract to Plugin Path:
+mkdir -p /usr/local/share/kafka/plugins/debezium-mysql
+tar -xvzf debezium-connector-mysql-2.5.2.Final-plugin.tar.gz -C /usr/local/share/kafka/plugins/debezium-mysql
+
+You must restart Kafka Connect to load the new plugin:
+bin/connect-distributed.sh config/connect-distributed.properties
+
+Verify Plugin is Loaded:
+curl http://localhost:8083/connector-plugins | jq
+
+
 
 Register Debezium MySQL Source Connector
 vi Create register-mysql-source.json:
