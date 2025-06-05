@@ -119,8 +119,13 @@ curl -X POST -H "Content-Type: application/json" \
 http://localhost:8083/connectors
 
 
+--> cd /usr/local/share/kafka/plugins/debezium-mysql
+--> cp mysql-connector-j-8.0.33 /usr/local/share/kafka/plugins/debezium-mysql/jdbc-source-sink-connector/confluentinc-kafka-connect-jdbc-10.7.3/lib/
 
-Register JDBC Sink Connector for MySQL
+## Restart kafka connector 
+bin/connect-distributed.sh config/connect-distributed.properties
+
+## Register JDBC Sink Connector for MySQL
 
 Create register-mysql-sink.json:
 
