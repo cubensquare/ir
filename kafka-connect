@@ -105,7 +105,8 @@ vi register-mysql-source.json:
     
     "include.schema.changes": "true", 
     "snapshot.mode": "initial", 
-    "time.precision.mode": "connect"
+    "time.precision.mode": "connect",
+    "database.connectionTimeZone": "UTC"
   }
 }
 
