@@ -81,17 +81,32 @@ vi register-mysql-source.json:
   "name": "mysql-source-connector",
   "config": {
     "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+
+    // MySQL connection
     "database.hostname": "localhost",
     "database.port": "3306",
-    "database.user": "debezium",
-    "database.password": "dbz",
+    "database.user": "root",
+    "database.password": "password",
+
+    // Required IDs & names
     "database.server.id": "184054",
-    "database.server.name": "mysql01",
-    "database.include.list": "source_db",
-    "topic.prefix": "test",
-    "table.include.list": "source_db.users",
-    "database.history.kafka.bootstrap.servers": "localhost:9092",
-    "database.history.kafka.topic": "dbhistory.fullfillment"
+    "database.server.name": "mysql01", 
+
+    // Filter: which DBs & tables to include
+    "database.include.list": "sourcedb",
+    "table.include.list": "sourcedb.drivers",
+
+    // Kafka topic prefix (used as: <prefix>.<db>.<table>)
+    "topic.prefix": "topic",
+
+    // Debezium internal schema history settings
+    "schema.history.internal.kafka.bootstrap.servers": "localhost:9092",
+    "schema.history.internal.kafka.topic": "schema-changes.mysql01", 
+
+    // Optional tuning
+    "include.schema.changes": "true", 
+    "snapshot.mode": "initial", 
+    "time.precision.mode": "connect"
   }
 }
 
@@ -114,9 +129,18 @@ Create register-mysql-sink.json:
   "config": {
     "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
     "tasks.max": "1",
-    "connection.url": "jdbc:mysql://localhost:3306/sink_db?user=root&password=",
-    "topics": "mysql01.source_db.users",
-    "insert.mode": "insert",
+    "connection.url": "jdbc:mysql://localhost:3306/sink_db",
+    "connection.user": "root",
+    "connection.password": "password",
+    "topics": "source_db.users",
+    "table.name.format": "sink_db.users",
+    "insert.mode": "upsert",
+    "pk.mode": "record_value",
+    "pk.fields": "id",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "true",
     "auto.create": "true",
     "auto.evolve": "true"
   }
